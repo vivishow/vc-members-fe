@@ -1,18 +1,47 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <van-cell-group title="会员列表">
+      <van-cell
+        v-for="member in members"
+        :key="member._id"
+        :title="member.nickName"
+        :value="member.points"
+      ></van-cell>
+    </van-cell-group>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import { Cell, CellGroup } from "vant";
 
 export default {
-  name: 'home',
+  name: "home",
+  data() {
+    return {
+      members: []
+    };
+  },
   components: {
-    HelloWorld
+    [Cell.name]: Cell,
+    [CellGroup.name]: CellGroup
+  },
+  async created() {
+    const {
+      data: { status, data: members }
+    } = await this.$http.get("/api/members");
+    console.log(this.members);
+    if (status === 1) this.members = members;
+    console.log(this.members);
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.van-cell-group {
+  margin: 15px 0;
+  .van-cell__title {
+    text-align: left;
   }
 }
-</script>
+</style>
+
