@@ -1,10 +1,8 @@
 <template>
   <div class="home">
     <van-cell-group title="会员列表">
-      <van-skeleton v-for="index in 10" :key="index" :loading="loading" :row="2">
+      <van-skeleton v-for="member in members" :key="member._id" :loading="loading" :row="2">
         <van-cell
-          v-for="member in members"
-          :key="member._id"
           :title="member.nickName"
           :value="member.noteName"
           is-link
