@@ -1,20 +1,22 @@
 <template>
   <div class="home">
     <van-cell-group title="会员列表">
-      <van-skeleton :loading="loading" :row="2" v-for="member in members" :key="member._id">
+      <van-skeleton v-for="index in 10" :key="index" :loading="loading" :row="2">
         <van-cell
+          v-for="member in members"
+          :key="member._id"
           :title="member.nickName"
           :value="member.noteName"
           is-link
-          :to="`/member/${member.id}`"
-        ></van-cell>
+          :to="`/member/${member._id}`"
+        />
       </van-skeleton>
     </van-cell-group>
   </div>
 </template>
 
 <script>
-import { Cell, CellGroup, Skeleton } from "vant";
+import { mapState } from "vuex";
 
 export default {
   name: "home",
@@ -23,30 +25,14 @@ export default {
       loading: false
     };
   },
-  components: {
-    [Cell.name]: Cell,
-    [CellGroup.name]: CellGroup,
-    [Skeleton.name]: Skeleton
+  computed: {
+    ...mapState(["members"])
   },
   methods: {
     async refresh() {
       this.loading = true;
-      const {
-        data: { code, message: members }
-      } = await this.$http.get("/api/members");
-      const membersList =
-        code === 1
-          ? members.map(m => {
-              return { id: m._id, nickName: m.nickName, noteName: m.noteName };
-            })
-          : [];
-      this.$store.commit("setMembers", membersList);
+      await this.$store.dispatch("getMembers");
       this.loading = false;
-    }
-  },
-  computed: {
-    members() {
-      return this.$store.state.members;
     }
   },
   async created() {
