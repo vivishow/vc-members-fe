@@ -15,14 +15,7 @@
 </template>
 
 <script>
-import { Icon, NavBar, PullRefresh } from "vant";
-
 export default {
-  components: {
-    [Icon.name]: Icon,
-    [NavBar.name]: NavBar,
-    [PullRefresh.name]: PullRefresh
-  },
   data() {
     return {
       title: "vc-members",
@@ -39,7 +32,7 @@ export default {
       this.$router.back();
     },
     onClickRight() {
-      this.$refs.child.refresh();
+      this.$refs.child.more();
     },
     async onRefresh() {
       await this.$refs.child.refresh();
@@ -84,5 +77,9 @@ export default {
     padding: 0 15px;
     color: #fc915b;
   }
+}
+
+.van-pull-refresh {
+  height: auto;
 }
 </style>
