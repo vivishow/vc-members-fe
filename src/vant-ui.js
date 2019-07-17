@@ -15,7 +15,8 @@ import {
   Button,
   Field,
   NumberKeyboard,
-  Toast
+  Toast,
+  Dialog
 } from "vant";
 
 Vue.use(Icon);
@@ -33,3 +34,4 @@ Vue.use(Button);
 Vue.use(Field);
 Vue.use(NumberKeyboard);
 Vue.use(Toast);
+Vue.use(Dialog);
