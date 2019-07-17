@@ -46,11 +46,21 @@ const store = new Vuex.Store({
       context.commit("setMembers", code === 1 ? members : []);
     },
 
+    async addMember(context, info) {
+      const { data } = await axios.post("/api/members", info);
+      return data;
+    },
+
+    async delMember(context, id) {
+      const { data } = await axios.delete(`/api/members/${id}`);
+      if (data.code === 1) {
+        context.dispatch("getMembers");
+      }
+      return data;
+    },
+
     async updateInfo(context, info) {
       const { data } = await axios.post(`/api/members/${info.id}`, info.update);
-      if (data.code === 1) {
-        context.commit("updateMember", info);
-      }
       return data;
     },
 

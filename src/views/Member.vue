@@ -34,7 +34,7 @@
     />
 
     <!-- 修改信息 -->
-    <van-popup v-model="showUpdateInfo" round :style="{width: '70%'}">
+    <van-popup v-model="showUpdateInfo" round :style="{width: '80%'}">
       <van-cell-group title="修改信息">
         <van-field clearable v-model="nickName" label="昵称" placeholder="请输入新昵称" />
         <van-field clearable v-model="noteName" label="备注" placeholder="请输入新备注" />
@@ -43,7 +43,7 @@
     </van-popup>
 
     <!-- 添加积分 -->
-    <van-popup v-model="showAddRecord" round :style="{width: '70%'}">
+    <van-popup v-model="showAddRecord" round :style="{width: '80%'}">
       <van-cell-group title="修改积分">
         <van-field clearable v-model="reason" label="原因" placeholder="请输入修改积分的原因" />
         <van-field
@@ -69,10 +69,6 @@ export default {
       id: this.$route.params._id,
       loading: false,
       showMore: false,
-      showUpdateInfo: false,
-      updateInfoLoading: false,
-      showAddRecord: false,
-      addRecordLoading: false,
       actions: [
         {
           name: "修改信息",
@@ -80,10 +76,17 @@ export default {
         },
         {
           name: "添加积分"
+        },
+        {
+          name: "删除会员"
         }
       ],
+      showUpdateInfo: false,
+      updateInfoLoading: false,
       nickName: "",
       noteName: "",
+      showAddRecord: false,
+      addRecordLoading: false,
       reason: "",
       points: ""
     };
@@ -118,6 +121,18 @@ export default {
         case "添加积分":
           this.showAddRecord = true;
           break;
+
+        case "删除会员":
+          this.$dialog
+            .confirm({
+              message: "确定要删除吗？"
+            })
+            .then(() => {
+              this.$store.dispatch("delMember", this.id);
+              this.$router.push("/");
+            })
+            .catch(() => {});
+          break;
       }
     },
 
@@ -145,6 +160,7 @@ export default {
         code === 1 ? this.$toast.success(message) : this.$toast.fail(message);
       }
     },
+
     async addRecord() {
       if (!this.reason || !this.points) {
         this.$toast.fail("请填写完整");
