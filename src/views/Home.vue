@@ -90,7 +90,6 @@ export default {
         this.noteName = "";
         if (code === 1) {
           await this.$toast.success(message);
-          this.refresh();
         } else {
           this.$toast.fail(message);
         }

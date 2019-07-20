@@ -30,11 +30,14 @@ const store = new Vuex.Store({
       if (noteName) targetMember.noteName = noteName;
     },
 
-    addMemberRecord(state, { id, update }) {
-      // 添加会员积分记录
-      let targetMember = state.members.find(m => m._id == id);
-      targetMember.pointsRecord.push(update);
-      targetMember.points += Number(update.value);
+    // 更新用户地址信息
+    updateContact(state, info) {
+      let targetMember = state.members.find(m => m._id == info.id);
+      if (info.type == "add") {
+        targetMember.contact.push(info.contact);
+      } else if (info.type == "del") {
+        targetMember.contact.splice(info.index, 1);
+      }
     }
   },
 
@@ -43,11 +46,14 @@ const store = new Vuex.Store({
       const {
         data: { code, message: members }
       } = await axios.get("/api/members");
-      context.commit("setMembers", code === 1 ? members : []);
+      await context.commit("setMembers", code === 1 ? members : []);
     },
 
     async addMember(context, info) {
       const { data } = await axios.post("/api/members", info);
+      if (data.code === 1) {
+        await context.dispatch("getMembers");
+      }
       return data;
     },
 
@@ -70,9 +76,25 @@ const store = new Vuex.Store({
         info.update
       );
       if (data.code === 1) {
-        context.commit("addMemberRecord", info);
+        context.dispatch("getMembers");
       }
       return data;
+    },
+
+    async updateAddress(context, info) {
+      let res = {};
+      if (info.type == "add") {
+        res = await axios.post(`/api/members/${info.id}/contact`, info.contact);
+      } else if (info.type == "del") {
+        let url = `/api/members/${info.id}/contact`;
+        res = await axios.delete(url, {
+          data: info.contact
+        });
+      }
+      if (res.data.code === 1) {
+        context.commit("updateContact", info);
+      }
+      return res.data;
     }
   }
 });
@@ -85,7 +107,7 @@ store.subscribe((mutation, state) => {
     case "updateMember":
       localStorage.setItem("members", JSON.stringify(state.members));
       break;
-    case "addMemberRecord":
+    case "updateContact":
       localStorage.setItem("members", JSON.stringify(state.members));
       break;
   }
