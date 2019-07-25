@@ -67,7 +67,7 @@ export default {
         this.$toast.success(message);
         this.showLogin = false;
       } else {
-        this.$store.fail(message);
+        this.$toast.fail(message);
       }
     }
   },
