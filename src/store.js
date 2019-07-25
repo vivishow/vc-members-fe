@@ -6,12 +6,22 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    members: JSON.parse(localStorage.getItem("members")) || []
+    members: JSON.parse(localStorage.getItem("members")) || [],
+    token: JSON.parse(localStorage.getItem("token")) || "",
+    g_name: JSON.parse(localStorage.getItem("g_name")) || ""
   },
 
   getter: {},
 
   mutations: {
+    setToken(state, token) {
+      state.token = token;
+    },
+
+    setGName(state, g_name) {
+      state.g_name = g_name;
+    },
+
     setMembers(state, members) {
       // 设置全部会员信息
       state.members = members;
@@ -42,11 +52,21 @@ const store = new Vuex.Store({
   },
 
   actions: {
+    async login(context, info) {
+      const { data } = await axios.post("/api/login", info);
+      if (data.code === 1) {
+        context.commit("setToken", data.token);
+        context.commit("setGName", data.g_name);
+        await context.dispatch("getMembers");
+      }
+      return data;
+    },
+
     async getMembers(context) {
       const {
         data: { code, message: members }
       } = await axios.get("/api/members");
-      await context.commit("setMembers", code === 1 ? members : []);
+      context.commit("setMembers", code === 1 ? members : []);
     },
 
     async addMember(context, info) {
@@ -60,7 +80,7 @@ const store = new Vuex.Store({
     async delMember(context, id) {
       const { data } = await axios.delete(`/api/members/${id}`);
       if (data.code === 1) {
-        context.dispatch("getMembers");
+        await context.dispatch("getMembers");
       }
       return data;
     },
@@ -76,7 +96,7 @@ const store = new Vuex.Store({
         info.update
       );
       if (data.code === 1) {
-        context.dispatch("getMembers");
+        await context.dispatch("getMembers");
       }
       return data;
     },
@@ -101,6 +121,12 @@ const store = new Vuex.Store({
 
 store.subscribe((mutation, state) => {
   switch (mutation.type) {
+    case "setToken":
+      localStorage.setItem("token", JSON.stringify(state.token));
+      break;
+    case "setGName":
+      localStorage.setItem("g_name", JSON.stringify(state.g_name));
+      break;
     case "setMembers":
       localStorage.setItem("members", JSON.stringify(state.members));
       break;

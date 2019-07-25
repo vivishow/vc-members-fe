@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <van-nav-bar
-      :title="title"
+      :title="g_name"
       :left-arrow="back"
       @click-left="onClickLeft"
       @click-right="onClickRight"
@@ -11,21 +11,35 @@
     <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
       <router-view ref="child" />
     </van-pull-refresh>
+
+    <!-- 登录窗口 -->
+    <van-popup v-model="showLogin" :close-on-click-overlay="false" :style="{width: '80%'}" round>
+      <van-cell-group title="请登录">
+        <van-field clearable v-model="userName" label="用户名" placeholder="请输入用户名" />
+        <van-field clearable v-model="password" label="密码" type="password" />
+        <van-button type="primary" @click="login">登录</van-button>
+      </van-cell-group>
+    </van-popup>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   data() {
     return {
-      title: "vc-members",
-      isLoading: false
+      showLogin: true,
+      isLoading: false,
+      userName: "",
+      password: ""
     };
   },
   computed: {
     back() {
       return this.$route.name != "home";
-    }
+    },
+    ...mapState(["g_name", "token"])
   },
   methods: {
     onClickLeft() {
@@ -37,6 +51,29 @@ export default {
     async onRefresh() {
       await this.$refs.child.refresh();
       this.isLoading = false;
+    },
+    async login() {
+      this.$toast.loading({
+        duration: 0,
+        mask: true,
+        forbidClick: true,
+        message: "正在处理，请稍后……"
+      });
+      const { code, message } = await this.$store.dispatch("login", {
+        u_name: this.userName,
+        pwd: this.password
+      });
+      if (code === 1) {
+        this.$toast.success(message);
+        this.showLogin = false;
+      } else {
+        this.$store.fail(message);
+      }
+    }
+  },
+  created() {
+    if (this.token) {
+      this.showLogin = false;
     }
   }
 };

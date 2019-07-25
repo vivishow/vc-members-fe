@@ -132,8 +132,6 @@ export default {
           this.delAddress(this.delAddressItem, this.delAddressIndex);
           break;
         case "复制地址":
-          console.log(this.delAddressItem);
-
           this.$copyText(
             `${this.delAddressItem.address}，${this.delAddressItem.name}，${this.delAddressItem.tel}`
           ).then(

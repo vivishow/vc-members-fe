@@ -5,6 +5,7 @@ import store from "./store";
 import axios from "axios";
 import VueClipboard from "vue-clipboard2";
 import "./vant-ui";
+import "./http-interceptors";
 
 Vue.config.productionTip = false;
 

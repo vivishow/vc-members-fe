@@ -43,6 +43,9 @@ export default {
       actions: [
         {
           name: "添加会员"
+        },
+        {
+          name: "退出登录"
         }
       ],
       showAddMember: false,
@@ -70,6 +73,9 @@ export default {
         case "添加会员":
           this.showAddMember = true;
           break;
+        case "退出登录":
+          localStorage.clear();
+          this.$router.go(0);
       }
     },
 
